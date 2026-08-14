@@ -1,0 +1,26 @@
+# Exact versions this project was built and verified against (Python 3.11.9).
+# Installing these exact pins is what makes results bit-exact reproducible --
+# different versions of scikit-learn/xgboost/catboost can and do produce
+# slightly different tree splits for the same random_state.
+#
+#   python -m venv .venv
+#   .venv\Scripts\activate
+#   pip install -r requirements.txt
+#   python patch_shap_xgboost_compat.py   # one-time, see SETUP.md
+
+pandas==2.1.4
+numpy==1.26.4
+scikit-learn==1.4.2
+xgboost==3.2.0
+catboost==1.2.10
+optuna==4.9.0
+shap==0.49.1
+matplotlib==3.7.5
+seaborn==0.13.2
+joblib==1.3.2
+openpyxl==3.1.5
+
+# Only needed for run_pipeline.py (baseline models via PyCaret's create_model).
+# Pulls in a large dependency tree of its own (plotly, sktime, statsmodels, ...);
+# skip it if you only need the tuned-model scripts (run_tuned_*.py).
+pycaret==3.3.2
