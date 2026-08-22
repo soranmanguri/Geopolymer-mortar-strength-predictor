@@ -10,6 +10,7 @@ Metrics
 - Pearson (r)   : Pearson correlation coefficient
 - RMSE          : Root mean squared error
 - MAE           : Mean absolute error
+- MAPE          : Mean absolute percentage error (%)
 - IoA           : Willmott's Index of Agreement
 - Theta Mean    : Mean of the bias factor theta = y_true / y_pred
 - Theta CoV     : Coefficient of variation of theta (COV-theta)
@@ -21,13 +22,19 @@ from typing import Dict, Iterable, List
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.metrics import (
+    mean_absolute_error,
+    mean_absolute_percentage_error,
+    mean_squared_error,
+    r2_score,
+)
 
 METRIC_COLUMNS: List[str] = [
     "R2",
     "Pearson (r)",
     "RMSE",
     "MAE",
+    "MAPE",
     "IoA",
     "Theta Mean",
     "Theta CoV",
@@ -80,6 +87,7 @@ def compute_metrics(y_true: Iterable[float], y_pred: Iterable[float]) -> Dict[st
     r = float(np.corrcoef(y_pred, y_true)[0, 1])
     rmse = float(np.sqrt(mean_squared_error(y_true, y_pred)))
     mae = float(mean_absolute_error(y_true, y_pred))
+    mape = float(mean_absolute_percentage_error(y_true, y_pred)) * 100.0
     ioa = float(index_of_agreement(y_true, y_pred))
     theta_mean, theta_cov = theta_stats(y_true, y_pred)
 
@@ -88,6 +96,7 @@ def compute_metrics(y_true: Iterable[float], y_pred: Iterable[float]) -> Dict[st
         "Pearson (r)": r,
         "RMSE": rmse,
         "MAE": mae,
+        "MAPE": mape,
         "IoA": ioa,
         "Theta Mean": theta_mean,
         "Theta CoV": theta_cov,
@@ -166,7 +175,8 @@ def print_metrics(label: str, metrics: Dict[str, float]) -> None:
         f"R2: {metrics['R2']:.3f} | "
         f"r: {metrics['Pearson (r)']:.3f} | "
         f"RMSE: {metrics['RMSE']:.3f} | "
-        f"MAE: {metrics['MAE']:.3f}"
+        f"MAE: {metrics['MAE']:.3f} | "
+        f"MAPE: {metrics['MAPE']:.2f}%"
     )
     print(
         f"IoA: {metrics['IoA']:.3f} | "

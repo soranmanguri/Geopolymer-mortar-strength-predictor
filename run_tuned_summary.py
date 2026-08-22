@@ -29,6 +29,13 @@ different units of analysis). This is a deliberate choice, not an
 inconsistency to fix -- the "10Fold_CV" sheet stays the official,
 untouched, stored-at-tuning-time number.
 
+MAPE was added to src/metrics.py after the original 200-trial tuning run,
+so tuned_cv/tuned_mc (frozen in tuned200_summary.pkl) never had it computed
+-- the "10Fold_CV"/"MonteCarlo_CV" sheets below therefore stay on the
+original 7-metric set (OFFICIAL_METRIC_COLS) rather than show a fabricated
+value. The "Mean±SD" sheets ARE a fresh recompute, so MAPE is genuinely
+calculable there and included (FULL_METRIC_COLS, from src/metrics.py).
+
 Usage (from an activated venv; can be run from anywhere, 'src' resolves via
 this script's own directory):
     python run_tuned_summary.py
@@ -42,7 +49,7 @@ import joblib
 import pandas as pd
 
 from src.data import load_data
-from src.metrics import fold_mean_table, fold_std_table
+from src.metrics import METRIC_COLUMNS as FULL_METRIC_COLS, fold_mean_table, fold_std_table
 from src.validation import kfold_cv, monte_carlo_cv
 
 HERE = Path(__file__).parent
@@ -50,7 +57,9 @@ DATA_PATH = HERE / "Optimization - NewDataset (clean, all rows).xlsx"
 SUMMARY_PATH = HERE / "tuned200_summary.pkl"
 OUT_PATH = HERE / "Results_Summary_Tuned200.xlsx"
 
-METRIC_COLS = ["R2", "Pearson (r)", "RMSE", "MAE", "IoA", "Theta Mean", "Theta CoV"]
+# The original tuning run (tune_200.py) predates MAPE being added to
+# src/metrics.py, so the frozen tuned_cv/tuned_mc dicts don't have it.
+OFFICIAL_METRIC_COLS = ["R2", "Pearson (r)", "RMSE", "MAE", "IoA", "Theta Mean", "Theta CoV"]
 MODEL_ORDER = ["XGBoost", "CatBoost", "Extra Trees", "Random Forest"]
 
 
@@ -60,7 +69,7 @@ def _fmt_mean_sd(mean_df: pd.DataFrame, sd_df: pd.DataFrame) -> pd.DataFrame:
         name = mrow["Model_ID"]
         srow = sd_df[sd_df["Model_ID"] == name].iloc[0]
         entry = {"Model_ID": name}
-        for m in METRIC_COLS:
+        for m in FULL_METRIC_COLS:
             entry[m] = f"{mrow[m]:.3f} ± {srow[m]:.3f}"
         rows.append(entry)
     return pd.DataFrame(rows)
@@ -70,8 +79,8 @@ def main() -> None:
     summary = joblib.load(SUMMARY_PATH)
 
     # ------------------------- official, stored numbers -------------------
-    cv_df = pd.DataFrame(summary["tuned_cv"]).T[METRIC_COLS]
-    mc_df = pd.DataFrame(summary["tuned_mc"]).T[METRIC_COLS]
+    cv_df = pd.DataFrame(summary["tuned_cv"]).T[OFFICIAL_METRIC_COLS]
+    mc_df = pd.DataFrame(summary["tuned_mc"]).T[OFFICIAL_METRIC_COLS]
     cv_df.index.name = "Model_ID"
     mc_df.index.name = "Model_ID"
     cv_df = cv_df.sort_values("R2", ascending=False).reset_index()

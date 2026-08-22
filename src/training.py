@@ -186,7 +186,7 @@ def run_full_pipeline(
         predictions_df[f"{col}_MonteCarlo_Pred"] = predictions_mc[model_name]
 
     # ----------------------------- Save one summary Excel -----------------
-    SHOW_METRICS = ["R2", "Pearson (r)", "RMSE", "MAE", "IoA", "Theta Mean", "Theta CoV"]
+    SHOW_METRICS = ["R2", "Pearson (r)", "RMSE", "MAE", "MAPE", "IoA", "Theta Mean", "Theta CoV"]
 
     def _fmt_mean_sd(mean_df: pd.DataFrame, sd_df: pd.DataFrame) -> pd.DataFrame:
         rows = []
