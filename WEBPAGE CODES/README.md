@@ -32,8 +32,8 @@ Pipeline, run in order:
    step, no server — everything, including the model, runs in the browser).
 
 5. **`5_geopolymer_predictor_CURRENT_LIVE.html`** — today's actual published
-   page, published at
-   https://claude.ai/code/artifact/3475d186-03a9-4f64-b6bb-8d92701b9f3e
+   page, live at
+   https://soranmanguri.github.io/Geopolymer-mortar-strength-predictor/
 
 ## Verified: rerunning (4) reproduces (5) byte-for-byte
 
