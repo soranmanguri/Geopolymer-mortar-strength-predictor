@@ -996,6 +996,33 @@ var FIXTURES = [{"row": [8.0, 500.0, 0.0, 0.0, 1500.0, 0.0, 72.73, 127.27, 1.75,
       return parseFloat(inputs[f.key].value);
     });
     if (vector.some(function (v) { return Number.isNaN(v); })) return;
+
+    // Every feature has a defined training range (shown as its "Training
+    // range"/hint text); the trained tree ensemble cannot reliably
+    // extrapolate beyond it, so block prediction rather than silently
+    // return a number outside what the model was ever shown -- this also
+    // covers Sand (Fine_Aggregate) never dropping to 0, since a mortar
+    // mix's fine-aggregate content can't realistically be zero and its
+    // min (432 kg/m3) already reflects that. Verified with an automated
+    // jsdom test (initial load, an out-of-range submit, and the
+    // NaOH/Na2SiO3 ratio live-update) before deploying this.
+    var violations = [];
+    FEATURES.forEach(function (f, i) {
+      var v = vector[i];
+      if (v < f.min || v > f.max) {
+        violations.push(f.label + "=" + v + " (allowed " + f.min + "–" + f.max + ")");
+      }
+    });
+
+    if (violations.length > 0) {
+      valueEl.textContent = "—";
+      markerEl.style.left = "0%";
+      chipEl.textContent = "Out of training range: " + violations.join("; ");
+      chipEl.className = "status-chip extrapolated";
+      chipEl.style.visibility = "visible";
+      return;
+    }
+
     var pred = predictXGB(vector);
     updateResult(pred);
   });
