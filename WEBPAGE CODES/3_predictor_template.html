@@ -1013,6 +1013,22 @@
       }
     });
 
+    // A geopolymer mix needs at least one binder/precursor -- Fly Ash,
+    // GGBFS Slag, and Metakaolin can each individually be 0 (that's a
+    // normal single-binder mix), but all three being 0 at once means no
+    // binder at all, which isn't a valid mix. Per-field range checks above
+    // don't catch this since 0 is within each field's own allowed range.
+    // Verified with an automated jsdom test (all-zero blocks with this
+    // message, a single-binder mix doesn't trigger it, normal mixes are
+    // unaffected) before deploying this.
+    var totalBinder = ["Fly_ash", "Slag", "Metakaoline"].reduce(function (sum, key) {
+      var idx = FEATURES.findIndex(function (f) { return f.key === key; });
+      return sum + vector[idx];
+    }, 0);
+    if (totalBinder <= 0) {
+      violations.push("Total Binder (Fly Ash + GGBFS Slag + Metakaolin) = 0 kg/m³ (at least one binder is required)");
+    }
+
     if (violations.length > 0) {
       valueEl.textContent = "—";
       markerEl.style.left = "0%";
