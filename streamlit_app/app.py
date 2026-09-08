@@ -63,6 +63,25 @@ st.markdown(
         background:#eaf3fa; border:1px solid #b8d4e8; border-radius:10px;
         padding:18px 20px;
     }
+
+    /* --- Compact, screenshot-friendly sizing --- */
+    .block-container {padding-top:1.2rem; padding-bottom:1.2rem;}
+    div[data-testid="stVerticalBlock"] {gap:0.5rem !important;}
+    div[data-testid="stHorizontalBlock"] {gap:0.7rem !important;}
+    div[data-testid="stVerticalBlockBorderWrapper"] {padding:0.5rem 0.2rem !important;}
+
+    /* Bigger labels, bigger input text, smaller boxes, no +/- steppers */
+    div[data-testid="stWidgetLabel"] p {font-size:1.02rem !important; font-weight:600;}
+    div[data-testid="stNumberInput"] input {
+        font-size:1.1rem !important;
+        padding:2px 8px !important;
+        height:2.1rem !important;
+    }
+    div[data-testid="stNumberInput"] button {display:none !important;}
+    div[data-testid="stNumberInputContainer"] {border-radius:6px;}
+    .stCaption, [data-testid="stCaptionContainer"] {font-size:0.92rem !important;}
+    div[data-testid="stMetricValue"] {font-size:1.3rem !important;}
+    div[data-testid="stMetricLabel"] {font-size:0.92rem !important;}
     </style>
     """,
     unsafe_allow_html=True,
