@@ -53,6 +53,16 @@ st.markdown(
     """
     <style>
     .big-num {font-size:2.6rem;font-weight:700;color:#8a5c14;}
+    h1, h2, h3 {color:#8a5c14 !important;}
+    h3 {font-size:1.05rem !important; text-transform:uppercase; letter-spacing:0.06em;}
+    div[data-testid="stVerticalBlockBorderWrapper"] {
+        background:#faf8f2; border-radius:10px;
+    }
+    div[data-testid="stMetricValue"] {color:#201d17;}
+    .result-panel {
+        background:#eaf3fa; border:1px solid #b8d4e8; border-radius:10px;
+        padding:18px 20px;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -103,132 +113,142 @@ def on_sand_edit():
 left, right = st.columns([2, 1], gap="large")
 
 with left:
-    st.subheader("Binder System")
-    st.caption("Precursor solids — at least one of fly ash, slag, or metakaolin.")
-    b1, b2, b3 = st.columns(3)
-    b1.number_input("Fly Ash (kg/m³)", 0.0, 734.0, key="Fly_ash", step=1.0)
-    b2.number_input("GGBFS Slag (kg/m³)", 0.0, 700.0, key="Slag", step=1.0)
-    b3.number_input("Metakaolin (kg/m³)", 0.0, 450.0, key="Metakaoline", step=1.0)
+    binder_box = st.container(border=True)
+    with binder_box:
+        st.subheader("Binder System")
+        st.caption("Precursor solids — at least one of fly ash, slag, or metakaolin.")
+        b1, b2, b3 = st.columns(3)
+        b1.number_input("Fly Ash (kg/m³)", 0.0, 734.0, key="Fly_ash", step=1.0)
+        b2.number_input("GGBFS Slag (kg/m³)", 0.0, 700.0, key="Slag", step=1.0)
+        b3.number_input("Metakaolin (kg/m³)", 0.0, 450.0, key="Metakaoline", step=1.0)
 
-    st.subheader("Alkaline Activator")
-    st.caption("Sodium hydroxide / sodium silicate activation system. The Na₂SiO₃/NaOH ratio is calculated automatically.")
-    a1, a2, a3 = st.columns(3)
-    a1.number_input("NaOH Molarity (M)", 3.0, 16.0, key="Molarity_M", step=0.5)
-    a2.number_input("NaOH Solution (kg/m³)", 64.28, 175.0, key="NaOH", step=0.5)
-    a3.number_input("Na₂SiO₃ Solution (kg/m³)", 127.27, 250.0, key="Na2SiO3", step=0.5)
-    na2sio3_naoh = compute_na2sio3_naoh_ratio(st.session_state.NaOH, st.session_state.Na2SiO3)
-    st.info(f"Na₂SiO₃ / NaOH Ratio = **{na2sio3_naoh:.3f}**  (calculated as Na₂SiO₃ ÷ NaOH)")
+    activator_box = st.container(border=True)
+    with activator_box:
+        st.subheader("Alkaline Activator")
+        st.caption("Sodium hydroxide / sodium silicate activation system. The Na₂SiO₃/NaOH ratio is calculated automatically.")
+        a1, a2, a3 = st.columns(3)
+        a1.number_input("NaOH Molarity (M)", 3.0, 16.0, key="Molarity_M", step=0.5)
+        a2.number_input("NaOH Solution (kg/m³)", 64.28, 175.0, key="NaOH", step=0.5)
+        a3.number_input("Na₂SiO₃ Solution (kg/m³)", 127.27, 250.0, key="Na2SiO3", step=0.5)
+        na2sio3_naoh = compute_na2sio3_naoh_ratio(st.session_state.NaOH, st.session_state.Na2SiO3)
+        st.info(f"Na₂SiO₃ / NaOH Ratio = **{na2sio3_naoh:.3f}**  (calculated as Na₂SiO₃ ÷ NaOH)")
 
-    st.subheader("Nano-Silica Modification")
-    st.caption("Colloidal nano-silica dosage and particle size. Particle size locks to 0 whenever dosage is 0.")
-    n1, n2 = st.columns(2)
-    n1.number_input("Nano-Silica Dosage (kg/m³)", 0.0, 50.0, key="Nano_Silica_Kg", step=0.5)
-    ns_size_disabled = st.session_state.Nano_Silica_Kg <= 0
-    if ns_size_disabled:
-        st.session_state["NS_size_nm"] = 0.0
-    n2.number_input(
-        "Nano-Silica Particle Size (nm)", 0.0, 30.0, key="NS_size_nm", step=0.5,
-        disabled=ns_size_disabled,
-        help="No nano-silica in mix — particle size not applicable" if ns_size_disabled else None,
-    )
+    nano_box = st.container(border=True)
+    with nano_box:
+        st.subheader("Nano-Silica Modification")
+        st.caption("Colloidal nano-silica dosage and particle size. Particle size locks to 0 whenever dosage is 0.")
+        n1, n2 = st.columns(2)
+        n1.number_input("Nano-Silica Dosage (kg/m³)", 0.0, 50.0, key="Nano_Silica_Kg", step=0.5)
+        ns_size_disabled = st.session_state.Nano_Silica_Kg <= 0
+        if ns_size_disabled:
+            st.session_state["NS_size_nm"] = 0.0
+        n2.number_input(
+            "Nano-Silica Particle Size (nm)", 0.0, 30.0, key="NS_size_nm", step=0.5,
+            disabled=ns_size_disabled,
+            help="No nano-silica in mix — particle size not applicable" if ns_size_disabled else None,
+        )
 
-    st.subheader("Physical Mix & Curing")
-    alk_binder = compute_alk_binder_ratio(
-        st.session_state.NaOH, st.session_state.Na2SiO3,
-        st.session_state.Fly_ash, st.session_state.Slag, st.session_state.Metakaoline,
-    )
+    physical_box = st.container(border=True)
+    with physical_box:
+        st.subheader("Physical Mix & Curing")
+        alk_binder = compute_alk_binder_ratio(
+            st.session_state.NaOH, st.session_state.Na2SiO3,
+            st.session_state.Fly_ash, st.session_state.Slag, st.session_state.Metakaoline,
+        )
 
-    current_values = {k: st.session_state[k] for k in ["Fly_ash", "Slag", "Metakaoline", "NaOH", "Na2SiO3", "Nano_Silica_Kg"]}
-    sg_values = {k: st.session_state[f"sg_{k}"] for k in SG_DEFAULTS}
-    sand_auto = compute_sand_auto(current_values, sg_values, st.session_state.void_pct)
+        current_values = {k: st.session_state[k] for k in ["Fly_ash", "Slag", "Metakaoline", "NaOH", "Na2SiO3", "Nano_Silica_Kg"]}
+        sg_values = {k: st.session_state[f"sg_{k}"] for k in SG_DEFAULTS}
+        sand_auto = compute_sand_auto(current_values, sg_values, st.session_state.void_pct)
 
-    if not st.session_state.sand_manual or st.session_state.get("Fine_Aggregate") is None:
-        st.session_state["Fine_Aggregate"] = round(sand_auto, 1)
+        if not st.session_state.sand_manual or st.session_state.get("Fine_Aggregate") is None:
+            st.session_state["Fine_Aggregate"] = round(sand_auto, 1)
 
-    p1, p2, p3 = st.columns(3)
-    p1.number_input(
-        "Sand (kg/m³)", 0.0, 5000.0, key="Fine_Aggregate", step=1.0,
-        on_change=on_sand_edit,
-        help="Auto-calculated to fill remaining mix volume — edit to override",
-    )
-    p2.metric("Alkaline / Binder Ratio", f"{alk_binder:.3f}")
-    p3.number_input("Curing Temperature (°C)", 20.0, 70.0, key="Curing_Condition", step=1.0)
+        p1, p2, p3 = st.columns(3)
+        p1.number_input(
+            "Sand (kg/m³)", 0.0, 5000.0, key="Fine_Aggregate", step=1.0,
+            on_change=on_sand_edit,
+            help="Auto-calculated to fill remaining mix volume — edit to override",
+        )
+        p2.metric("Alkaline / Binder Ratio", f"{alk_binder:.3f}")
+        p3.number_input("Curing Temperature (°C)", 20.0, 70.0, key="Curing_Condition", step=1.0)
 
-    if st.session_state.sand_manual:
-        st.caption("\U0001F4CC Manually entered — click **Reset to median mix** to restore auto-calculation")
-    else:
-        st.caption(f"Auto-calculated: occupies remaining volume to reach 1000 L (currently {sand_auto:.1f} kg/m³)")
+        if st.session_state.sand_manual:
+            st.caption("\U0001F4CC Manually entered — click **Reset to median mix** to restore auto-calculation")
+        else:
+            st.caption(f"Auto-calculated: occupies remaining volume to reach 1000 L (currently {sand_auto:.1f} kg/m³)")
 
-    with st.expander("Mix Volume Check (absolute volume method, specific gravities editable)"):
-        sgc = st.columns(4)
-        sgc[0].number_input("Fly Ash (SG)", key="sg_Fly_ash")
-        sgc[1].number_input("GGBFS Slag (SG)", key="sg_Slag")
-        sgc[2].number_input("Metakaolin (SG)", key="sg_Metakaoline")
-        sgc[3].number_input("Sand (SG)", key="sg_Fine_Aggregate")
-        sgc2 = st.columns(4)
-        sgc2[0].number_input("NaOH Solution (SG)", key="sg_NaOH")
-        sgc2[1].number_input("Na₂SiO₃ Solution (SG)", key="sg_Na2SiO3")
-        sgc2[2].number_input("Nano Silica (SG)", key="sg_Nano_Silica_Kg")
-        sgc2[3].number_input("Void Content (%)", key="void_pct")
+        with st.expander("Mix Volume Check (absolute volume method, specific gravities editable)"):
+            sgc = st.columns(4)
+            sgc[0].number_input("Fly Ash (SG)", key="sg_Fly_ash")
+            sgc[1].number_input("GGBFS Slag (SG)", key="sg_Slag")
+            sgc[2].number_input("Metakaolin (SG)", key="sg_Metakaoline")
+            sgc[3].number_input("Sand (SG)", key="sg_Fine_Aggregate")
+            sgc2 = st.columns(4)
+            sgc2[0].number_input("NaOH Solution (SG)", key="sg_NaOH")
+            sgc2[1].number_input("Na₂SiO₃ Solution (SG)", key="sg_Na2SiO3")
+            sgc2[2].number_input("Nano Silica (SG)", key="sg_Nano_Silica_Kg")
+            sgc2[3].number_input("Void Content (%)", key="void_pct")
 
     bcol1, bcol2 = st.columns([1, 1])
     bcol1.button("Reset to median mix", on_click=reset_to_median, use_container_width=True)
     predict_clicked = bcol2.button("Predict strength", type="primary", use_container_width=True)
 
 with right:
-    st.subheader("Predicted strength")
+    result_box = st.container(border=True)
+    with result_box:
+        st.subheader("Predicted strength")
 
-    values = {k: st.session_state[k] for k in ["Molarity_M", "Fly_ash", "Slag", "Metakaoline", "Fine_Aggregate", "Nano_Silica_Kg", "NaOH", "Na2SiO3", "Curing_Condition", "NS_size_nm"]}
-    vector = build_vector(values)
-    violations = compute_violations(vector)
+        values = {k: st.session_state[k] for k in ["Molarity_M", "Fly_ash", "Slag", "Metakaoline", "Fine_Aggregate", "Nano_Silica_Kg", "NaOH", "Na2SiO3", "Curing_Condition", "NS_size_nm"]}
+        vector = build_vector(values)
+        violations = compute_violations(vector)
 
-    if predict_clicked:
-        st.session_state.has_predicted = True
-        if violations:
-            st.session_state.last_pred = None
-            st.session_state.last_violations = violations
+        if predict_clicked:
+            st.session_state.has_predicted = True
+            if violations:
+                st.session_state.last_pred = None
+                st.session_state.last_violations = violations
+            else:
+                st.session_state.last_pred = predict(model, vector)
+                st.session_state.last_violations = []
+
+        if not st.session_state.has_predicted:
+            st.markdown('<div class="big-num" style="color:#938a74;">—</div>', unsafe_allow_html=True)
+            st.caption("Click Predict strength to run the model")
+        elif st.session_state.last_violations:
+            st.markdown('<div class="big-num" style="color:#938a74;">—</div>', unsafe_allow_html=True)
+            st.error("Out of training range: " + "; ".join(st.session_state.last_violations))
         else:
-            st.session_state.last_pred = predict(model, vector)
-            st.session_state.last_violations = []
+            pred = st.session_state.last_pred
+            st.markdown(f'<div class="big-num">{pred:.1f} <span style="font-size:1.2rem;color:#5e5849;">MPa</span></div>', unsafe_allow_html=True)
+            st.caption("28-day compressive strength")
+            if TARGET_MIN <= pred <= TARGET_MAX:
+                st.success("● Within training range")
+            else:
+                st.warning("● Outside training range")
 
-    if not st.session_state.has_predicted:
-        st.markdown('<div class="big-num" style="color:#938a74;">—</div>', unsafe_allow_html=True)
-        st.caption("Click Predict strength to run the model")
-    elif st.session_state.last_violations:
-        st.markdown('<div class="big-num" style="color:#938a74;">—</div>', unsafe_allow_html=True)
-        st.error("Out of training range: " + "; ".join(st.session_state.last_violations))
-    else:
-        pred = st.session_state.last_pred
-        st.markdown(f'<div class="big-num">{pred:.1f} <span style="font-size:1.2rem;color:#5e5849;">MPa</span></div>', unsafe_allow_html=True)
-        st.caption("28-day compressive strength")
-        if TARGET_MIN <= pred <= TARGET_MAX:
-            st.success("● Within training range")
+        st.divider()
+        st.markdown("**Validated model performance**")
+        m1, m2 = st.columns(2)
+        m1.metric("R² · 10-fold CV", "0.925")
+        m2.metric("RMSE · 10-fold CV", "4.35 MPa")
+        m1.metric("R² · Monte Carlo (100×)", "0.898")
+        m2.metric("RMSE · Monte Carlo (100×)", "5.00 MPa")
+        st.caption(
+            "Metrics from the tuned model's cross-validation, not this single "
+            "prediction. Predictions for mixes far outside the training "
+            "envelope are less reliable."
+        )
+
+        st.divider()
+        st.markdown("**Mix volume check**")
+        if st.session_state.sand_manual:
+            sand_vol = st.session_state.Fine_Aggregate / st.session_state.sg_Fine_Aggregate if st.session_state.sg_Fine_Aggregate > 0 else 0
+            occupied = sum(current_values[k] / sg_values[k] for k in current_values if sg_values.get(k, 0) > 0)
+            total_vol = occupied + (st.session_state.void_pct / 100.0) * 1000.0 + sand_vol
         else:
-            st.warning("● Outside training range")
-
-    st.divider()
-    st.markdown("**Validated model performance**")
-    m1, m2 = st.columns(2)
-    m1.metric("R² · 10-fold CV", "0.925")
-    m2.metric("RMSE · 10-fold CV", "4.35 MPa")
-    m1.metric("R² · Monte Carlo (100×)", "0.898")
-    m2.metric("RMSE · Monte Carlo (100×)", "5.00 MPa")
-    st.caption(
-        "Metrics from the tuned model's cross-validation, not this single "
-        "prediction. Predictions for mixes far outside the training "
-        "envelope are less reliable."
-    )
-
-    st.divider()
-    st.markdown("**Mix volume check**")
-    if st.session_state.sand_manual:
-        sand_vol = st.session_state.Fine_Aggregate / st.session_state.sg_Fine_Aggregate if st.session_state.sg_Fine_Aggregate > 0 else 0
-        occupied = sum(current_values[k] / sg_values[k] for k in current_values if sg_values.get(k, 0) > 0)
-        total_vol = occupied + (st.session_state.void_pct / 100.0) * 1000.0 + sand_vol
-    else:
-        total_vol = 1000.0 if sand_auto >= 0 else None
-    if total_vol is not None:
-        st.metric("Volume", f"{total_vol:.1f} L / 1000 L")
+            total_vol = 1000.0 if sand_auto >= 0 else None
+        if total_vol is not None:
+            st.metric("Volume", f"{total_vol:.1f} L / 1000 L")
 
 st.divider()
 st.caption(
