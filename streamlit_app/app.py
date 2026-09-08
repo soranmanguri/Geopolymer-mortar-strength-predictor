@@ -56,7 +56,8 @@ st.markdown(
     h1, h2, h3 {color:#8a5c14 !important;}
     h3 {font-size:1.05rem !important; text-transform:uppercase; letter-spacing:0.06em;}
     div[data-testid="stVerticalBlockBorderWrapper"] {
-        background:#faf8f2; border-radius:10px;
+        background:#f5f2ea; border-radius:10px;
+        border:1px solid #ddd3ba !important;
     }
     div[data-testid="stMetricValue"] {color:#201d17;}
     .result-panel {
@@ -70,18 +71,24 @@ st.markdown(
     div[data-testid="stHorizontalBlock"] {gap:0.7rem !important;}
     div[data-testid="stVerticalBlockBorderWrapper"] {padding:0.5rem 0.2rem !important;}
 
-    /* Bigger labels, bigger input text, smaller boxes, no +/- steppers */
-    div[data-testid="stWidgetLabel"] p {font-size:1.02rem !important; font-weight:600;}
+    /* Bigger labels, bigger input text, narrow (non-stretched) boxes, no +/- steppers */
+    div[data-testid="stWidgetLabel"] p {font-size:1.15rem !important; font-weight:700;}
+    div[data-testid="stNumberInputContainer"] {
+        max-width:150px !important;
+        border-radius:6px;
+        background:#ffffff !important;
+        border:1px solid #c9c0a6 !important;
+    }
     div[data-testid="stNumberInput"] input {
-        font-size:1.1rem !important;
-        padding:2px 8px !important;
-        height:2.1rem !important;
+        font-size:1.3rem !important;
+        font-weight:600;
+        padding:4px 10px !important;
+        height:2.4rem !important;
     }
     div[data-testid="stNumberInput"] button {display:none !important;}
-    div[data-testid="stNumberInputContainer"] {border-radius:6px;}
-    .stCaption, [data-testid="stCaptionContainer"] {font-size:0.92rem !important;}
-    div[data-testid="stMetricValue"] {font-size:1.3rem !important;}
-    div[data-testid="stMetricLabel"] {font-size:0.92rem !important;}
+    .stCaption, [data-testid="stCaptionContainer"] {font-size:0.95rem !important;}
+    div[data-testid="stMetricValue"] {font-size:1.4rem !important;}
+    div[data-testid="stMetricLabel"] {font-size:0.98rem !important;}
     </style>
     """,
     unsafe_allow_html=True,
