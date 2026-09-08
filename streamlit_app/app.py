@@ -35,6 +35,14 @@ HERE = Path(__file__).parent
 MODEL_PATH = HERE / "xgboost_tuned_model.pkl"
 TARGET_MIN, TARGET_MAX = 12.87, 82.0
 
+FEATURE_RANGE = {f["key"]: (f["min"], f["max"]) for f in FEATURES}
+
+
+def range_caption(col, key):
+    lo, hi = FEATURE_RANGE[key]
+    col.caption(f"Range: {lo:g}–{hi:g}")
+
+
 DEFAULTS = {
     "Molarity_M": 10.0, "Fly_ash": 343.0, "Slag": 341.0, "Metakaoline": 0.0,
     "Nano_Silica_Kg": 13.0, "NaOH": 108.0, "Na2SiO3": 175.0,
@@ -145,8 +153,11 @@ with left:
         st.caption("Precursor solids — at least one of fly ash, slag, or metakaolin.")
         b1, b2, b3 = st.columns(3)
         b1.number_input("Fly Ash (kg/m³)", 0.0, 734.0, key="Fly_ash", step=1.0)
+        range_caption(b1, "Fly_ash")
         b2.number_input("GGBFS Slag (kg/m³)", 0.0, 700.0, key="Slag", step=1.0)
+        range_caption(b2, "Slag")
         b3.number_input("Metakaolin (kg/m³)", 0.0, 450.0, key="Metakaoline", step=1.0)
+        range_caption(b3, "Metakaoline")
 
     activator_box = st.container(border=True)
     with activator_box:
@@ -154,10 +165,14 @@ with left:
         st.caption("Sodium hydroxide / sodium silicate activation system. The Na₂SiO₃/NaOH ratio is calculated automatically.")
         a1, a2, a3 = st.columns(3)
         a1.number_input("NaOH Molarity (M)", 3.0, 16.0, key="Molarity_M", step=0.5)
+        range_caption(a1, "Molarity_M")
         a2.number_input("NaOH Solution (kg/m³)", 64.28, 175.0, key="NaOH", step=0.5)
+        range_caption(a2, "NaOH")
         a3.number_input("Na₂SiO₃ Solution (kg/m³)", 127.27, 250.0, key="Na2SiO3", step=0.5)
+        range_caption(a3, "Na2SiO3")
         na2sio3_naoh = compute_na2sio3_naoh_ratio(st.session_state.NaOH, st.session_state.Na2SiO3)
-        st.info(f"Na₂SiO₃ / NaOH Ratio = **{na2sio3_naoh:.3f}**  (calculated as Na₂SiO₃ ÷ NaOH)")
+        lo, hi = FEATURE_RANGE["Na2SiO3_NaOH"]
+        st.info(f"Na₂SiO₃ / NaOH Ratio = **{na2sio3_naoh:.3f}**  (calculated as Na₂SiO₃ ÷ NaOH; allowed range {lo:g}–{hi:g})")
 
     nano_box = st.container(border=True)
     with nano_box:
@@ -165,6 +180,7 @@ with left:
         st.caption("Colloidal nano-silica dosage and particle size. Particle size locks to 0 whenever dosage is 0.")
         n1, n2 = st.columns(2)
         n1.number_input("Nano-Silica Dosage (kg/m³)", 0.0, 50.0, key="Nano_Silica_Kg", step=0.5)
+        range_caption(n1, "Nano_Silica_Kg")
         ns_size_disabled = st.session_state.Nano_Silica_Kg <= 0
         if ns_size_disabled:
             st.session_state["NS_size_nm"] = 0.0
@@ -173,6 +189,7 @@ with left:
             disabled=ns_size_disabled,
             help="No nano-silica in mix — particle size not applicable" if ns_size_disabled else None,
         )
+        range_caption(n2, "NS_size_nm")
 
     physical_box = st.container(border=True)
     with physical_box:
@@ -195,8 +212,11 @@ with left:
             on_change=on_sand_edit,
             help="Auto-calculated to fill remaining mix volume — edit to override",
         )
+        range_caption(p1, "Fine_Aggregate")
         p2.metric("Alkaline / Binder Ratio", f"{alk_binder:.3f}")
+        range_caption(p2, "Alk_Binder")
         p3.number_input("Curing Temperature (°C)", 20.0, 70.0, key="Curing_Condition", step=1.0)
+        range_caption(p3, "Curing_Condition")
 
         if st.session_state.sand_manual:
             st.caption("\U0001F4CC Manually entered — click **Reset to median mix** to restore auto-calculation")
