@@ -172,7 +172,6 @@ with left:
     binder_box = st.container(border=True)
     with binder_box:
         st.subheader("Binder System")
-        st.caption("Precursor solids — at least one of fly ash, slag, or metakaolin.")
         b1, b2, b3 = st.columns(3)
         b1.number_input("Fly Ash (kg/m³)", 0.0, 734.0, key="Fly_ash", step=1.0)
         range_caption(b1, "Fly_ash")
@@ -184,7 +183,6 @@ with left:
     activator_box = st.container(border=True)
     with activator_box:
         st.subheader("Alkaline Activator")
-        st.caption("Sodium hydroxide / sodium silicate activation system. The Na₂SiO₃/NaOH ratio is calculated automatically.")
         a1, a2, a3 = st.columns(3)
         a1.number_input("NaOH Molarity (M)", 3.0, 16.0, key="Molarity_M", step=0.5)
         range_caption(a1, "Molarity_M")
@@ -202,7 +200,6 @@ with left:
     nano_box = st.container(border=True)
     with nano_box:
         st.subheader("Nano-Silica Modification")
-        st.caption("Colloidal nano-silica dosage and particle size. Particle size locks to 0 whenever dosage is 0.")
         n1, n2 = st.columns(2)
         n1.number_input("Nano-Silica Dosage (kg/m³)", 0.0, 50.0, key="Nano_Silica_Kg", step=0.5)
         range_caption(n1, "Nano_Silica_Kg")
@@ -245,8 +242,6 @@ with left:
 
         if st.session_state.sand_manual:
             st.caption("\U0001F4CC Manually entered — click **Reset to median mix** to restore auto-calculation")
-        else:
-            st.caption(f"Auto-calculated: occupies remaining volume to reach 1000 L (currently {sand_auto:.1f} kg/m³)")
 
         with st.expander("Specific Gravity Data (editable)"):
             sgc = st.columns(4)
