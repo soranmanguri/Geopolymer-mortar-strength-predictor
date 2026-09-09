@@ -180,8 +180,9 @@ with left:
         a3.number_input("Na₂SiO₃ Solution (kg/m³)", 127.27, 250.0, key="Na2SiO3", step=0.5)
         range_caption(a3, "Na2SiO3")
         na2sio3_naoh = compute_na2sio3_naoh_ratio(st.session_state.NaOH, st.session_state.Na2SiO3)
-        lo, hi = FEATURE_RANGE["Na2SiO3_NaOH"]
-        st.info(f"Na₂SiO₃ / NaOH Ratio = **{na2sio3_naoh:.3f}**  (calculated as Na₂SiO₃ ÷ NaOH; allowed range {lo:g}–{hi:g})")
+        ratio_col = st.columns(3)[0]
+        ratio_col.metric("Na₂SiO₃ / NaOH Ratio", f"{na2sio3_naoh:.3f}")
+        range_caption(ratio_col, "Na2SiO3_NaOH")
 
     nano_box = st.container(border=True)
     with nano_box:
