@@ -82,7 +82,7 @@ st.markdown(
     div[data-testid="stMarkdownContainer"] p {font-size:1.08rem !important;}
 
     /* Bigger labels, bigger input text, narrow (non-stretched) boxes, no +/- steppers */
-    div[data-testid="stWidgetLabel"] p {font-size:1.22rem !important; font-weight:700;}
+    [data-testid="stWidgetLabel"] p {font-size:1.22rem !important; font-weight:700;}
     div[data-testid="stNumberInputContainer"] {
         max-width:175px !important;
         border-radius:6px;
@@ -96,6 +96,20 @@ st.markdown(
         height:2.3rem !important;
     }
     div[data-testid="stNumberInput"] button {display:none !important;}
+    /* Read-only cells (disabled inputs) should still look like normal cells */
+    div[data-testid="stNumberInput"] input:disabled {
+        color:#201d17 !important;
+        -webkit-text-fill-color:#201d17 !important;
+        opacity:1 !important;
+    }
+    div[data-testid="stNumberInputContainer"]:has(input:disabled) {
+        border-color:#c9c0a6 !important;
+        opacity:1 !important;
+    }
+    [data-testid="stWidgetLabel"][disabled] p {
+        color:#201d17 !important;
+        opacity:1 !important;
+    }
     .stCaption, [data-testid="stCaptionContainer"] {font-size:1.02rem !important;}
     div[data-testid="stMetricValue"] {font-size:1.55rem !important;}
     div[data-testid="stMetricLabel"],
@@ -181,7 +195,9 @@ with left:
         range_caption(a3, "Na2SiO3")
         na2sio3_naoh = compute_na2sio3_naoh_ratio(st.session_state.NaOH, st.session_state.Na2SiO3)
         ratio_col = st.columns(3)[0]
-        ratio_col.metric("Na₂SiO₃ / NaOH Ratio", f"{na2sio3_naoh:.3f}")
+        ratio_col.number_input(
+            "Na₂SiO₃ / NaOH Ratio", value=na2sio3_naoh, disabled=True, format="%.3f",
+        )
         range_caption(ratio_col, "Na2SiO3_NaOH")
 
     nano_box = st.container(border=True)
