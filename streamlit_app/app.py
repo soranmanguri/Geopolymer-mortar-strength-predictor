@@ -133,11 +133,10 @@ st.write(
     "metakaolin geopolymer mortar"
 )
 
-c1, c2, c3, c4 = st.columns(4)
+c1, c2, c3 = st.columns(3)
 c1.metric("Training mixes", "136")
 c2.metric("Mix parameters", "12")
-c3.metric("Boosted trees", "850")
-c4.metric("Observed MPa range", "12.9–82.0")
+c3.metric("Observed MPa range", "12.9–82.0")
 st.divider()
 
 # ---------------------------------------------------------------- state ---
