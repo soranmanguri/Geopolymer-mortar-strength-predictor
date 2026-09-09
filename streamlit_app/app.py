@@ -249,7 +249,7 @@ with left:
         else:
             st.caption(f"Auto-calculated: occupies remaining volume to reach 1000 L (currently {sand_auto:.1f} kg/m³)")
 
-        with st.expander("Mix Volume Check (absolute volume method, specific gravities editable)"):
+        with st.expander("Specific Gravity Data (editable)"):
             sgc = st.columns(4)
             sgc[0].number_input("Fly Ash (SG)", key="sg_Fly_ash")
             sgc[1].number_input("GGBFS Slag (SG)", key="sg_Slag")
