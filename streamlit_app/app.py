@@ -84,7 +84,7 @@ st.markdown(
     /* Bigger labels, bigger input text, narrow (non-stretched) boxes, no +/- steppers */
     div[data-testid="stWidgetLabel"] p {font-size:1.22rem !important; font-weight:700;}
     div[data-testid="stNumberInputContainer"] {
-        max-width:140px !important;
+        max-width:175px !important;
         border-radius:6px;
         background:#ffffff !important;
         border:1px solid #c9c0a6 !important;
