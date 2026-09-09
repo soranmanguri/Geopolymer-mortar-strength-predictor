@@ -62,7 +62,8 @@ st.markdown(
     <style>
     .big-num {font-size:2.6rem;font-weight:700;color:#8a5c14;}
     h1, h2, h3 {color:#8a5c14 !important;}
-    h3 {font-size:1.05rem !important; text-transform:uppercase; letter-spacing:0.06em;}
+    h1 {font-size:2.1rem !important;}
+    h3 {font-size:1.2rem !important; text-transform:uppercase; letter-spacing:0.06em;}
     div[data-testid="stVerticalBlockBorderWrapper"] {
         background:#f5f2ea; border-radius:10px;
         border:1px solid #ddd3ba !important;
@@ -73,30 +74,39 @@ st.markdown(
         padding:18px 20px;
     }
 
-    /* --- Compact, screenshot-friendly sizing --- */
-    .block-container {padding-top:1.2rem; padding-bottom:1.2rem;}
-    div[data-testid="stVerticalBlock"] {gap:0.5rem !important;}
-    div[data-testid="stHorizontalBlock"] {gap:0.7rem !important;}
-    div[data-testid="stVerticalBlockBorderWrapper"] {padding:0.5rem 0.2rem !important;}
+    /* --- Compact overall layout, bigger text --- */
+    .block-container {padding-top:1rem; padding-bottom:1rem; max-width:1180px; margin:0 auto;}
+    div[data-testid="stVerticalBlock"] {gap:0.4rem !important;}
+    div[data-testid="stHorizontalBlock"] {gap:0.6rem !important;}
+    div[data-testid="stVerticalBlockBorderWrapper"] {padding:0.4rem 0.2rem !important;}
+    div[data-testid="stMarkdownContainer"] p {font-size:1.08rem !important;}
 
     /* Bigger labels, bigger input text, narrow (non-stretched) boxes, no +/- steppers */
-    div[data-testid="stWidgetLabel"] p {font-size:1.15rem !important; font-weight:700;}
+    div[data-testid="stWidgetLabel"] p {font-size:1.22rem !important; font-weight:700;}
     div[data-testid="stNumberInputContainer"] {
-        max-width:150px !important;
+        max-width:140px !important;
         border-radius:6px;
         background:#ffffff !important;
         border:1px solid #c9c0a6 !important;
     }
     div[data-testid="stNumberInput"] input {
-        font-size:1.3rem !important;
+        font-size:1.4rem !important;
         font-weight:600;
-        padding:4px 10px !important;
-        height:2.4rem !important;
+        padding:4px 8px !important;
+        height:2.3rem !important;
     }
     div[data-testid="stNumberInput"] button {display:none !important;}
-    .stCaption, [data-testid="stCaptionContainer"] {font-size:0.95rem !important;}
-    div[data-testid="stMetricValue"] {font-size:1.4rem !important;}
-    div[data-testid="stMetricLabel"] {font-size:0.98rem !important;}
+    .stCaption, [data-testid="stCaptionContainer"] {font-size:1.02rem !important;}
+    div[data-testid="stMetricValue"] {font-size:1.55rem !important;}
+    div[data-testid="stMetricLabel"],
+    div[data-testid="stMetricLabel"] * {
+        font-size:1.0rem !important;
+        white-space:normal !important;
+        overflow:visible !important;
+        text-overflow:unset !important;
+    }
+    div[data-testid="stButton"] button p {font-size:1.1rem !important;}
+    div[data-testid="stAlertContentInfo"] p, div[data-testid="stAlertContentInfo"] {font-size:1.05rem !important;}
     </style>
     """,
     unsafe_allow_html=True,
@@ -277,13 +287,8 @@ with right:
         m1, m2 = st.columns(2)
         m1.metric("R² · 10-fold CV", "0.925")
         m2.metric("RMSE · 10-fold CV", "4.35 MPa")
-        m1.metric("R² · Monte Carlo (100×)", "0.898")
-        m2.metric("RMSE · Monte Carlo (100×)", "5.00 MPa")
-        st.caption(
-            "Metrics from the tuned model's cross-validation, not this single "
-            "prediction. Predictions for mixes far outside the training "
-            "envelope are less reliable."
-        )
+        m1.metric("R² · MC (100×)", "0.898")
+        m2.metric("RMSE · MC (100×)", "5.00 MPa")
 
         st.divider()
         st.markdown("**Mix volume check**")
