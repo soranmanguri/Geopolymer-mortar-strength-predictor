@@ -116,8 +116,7 @@ st.markdown("###### TUNED XGBOOST · OPTUNA-OPTIMIZED, 200 TRIALS")
 st.title("\U0001F9F1 Geopolymer Mortar Strength Predictor")
 st.write(
     "Predicts 28-day compressive strength of nano-silica-modified fly ash/slag/"
-    "metakaolin geopolymer mortar from mix-design parameters, using a "
-    "gradient-boosted model tuned on 136 experimental mixes."
+    "metakaolin geopolymer mortar"
 )
 
 c1, c2, c3, c4 = st.columns(4)
